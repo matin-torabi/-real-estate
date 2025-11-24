@@ -42,14 +42,14 @@ export async function PUT(req: Request, context: any) {
       rent,
       deposit,
       type,
-      image,
+      images,
       meter,
     } = body;
 
     await db.query(
       `UPDATE properties 
-       SET title=?, address=?, description=?, phone=?, price=?, rent=?, deposit=?, type=?, image=?, meter=? 
-       WHERE id=?`,
+   SET title=?, address=?, description=?, phone=?, price=?, rent=?, deposit=?, type=?, images=?, meter=? 
+   WHERE id=?`,
       [
         title,
         address,
@@ -59,7 +59,7 @@ export async function PUT(req: Request, context: any) {
         rent,
         deposit,
         type,
-        image,
+        JSON.stringify(images),
         meter,
         id,
       ]

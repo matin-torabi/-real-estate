@@ -1,40 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { IoSearch } from "react-icons/io5";
 
 interface FilterBarProps {
-  defaultType?: string; // 'buy' | 'rent'
+  defaultType?: string;
 }
 
 export default function FilterBar({ defaultType = "buy" }: FilterBarProps) {
   const router = useRouter();
   const [meter, setMeter] = useState("");
+  const pathName = usePathname();
 
   const doSearch = () => {
     const params = new URLSearchParams();
     if (meter) params.append("meter", meter);
 
-    // مسیر بر اساس نوع معامله
     const path = defaultType === "rent" ? "/rent" : "/sale";
     router.push(`${path}?${params.toString()}`);
   };
 
   return (
-    <div className="flex items-center justify-center gap-4 p-4 bg-gray-100 rounded-xl shadow-md">
+    <div className={pathName==="/" ? "hidden":"flex items-center justify-center gap-4 p-4"}>
       <input
         type="number"
         placeholder="حداقل متراژ (متر)"
         value={meter}
         onChange={(e) => setMeter(e.target.value)}
-        className="px-4 py-2 rounded-xl border border-gray-300 w-52 outline-none focus:ring-2 focus:ring-indigo-500"
+        className="px-2 py-2 text-xl text-[#2b2b2b] rounded-xl border border-gray-300 w-[300px] outline-none focus:ring-2 focus:ring-[#DC143C]"
       />
 
       <button
         onClick={doSearch}
-        className="px-6 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all"
+        className="px-5 py-2.5 flex gap-2 items-center bg-[#DC143C] text-[16px] text-white rounded hover:bg-[#DC143C] transition-all cursor-pointer"
       >
         جستجو
+        <IoSearch />
       </button>
     </div>
   );

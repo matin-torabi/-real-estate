@@ -51,9 +51,9 @@ export default function RentPage() {
       </h1>
 
       {/* FilterBar */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <FilterBar defaultType="rent" />
-      </div>
+      </div> */}
 
       {/* لیست آگهی‌ها */}
       <div className="flex flex-wrap gap-6 justify-center">
@@ -85,9 +85,23 @@ export default function RentPage() {
               <p className="text-sm mb-2">
                 <b>تلفن:</b> {p.phone}
               </p>
-              <p className="text-base font-semibold mb-1">
-                <b>قیمت خرید:</b> {p.price.toLocaleString()} تومان
-              </p>
+              {p.type === "buy" ? (
+                <p className="text-base font-semibold mb-1">
+                  <b>قیمت خرید:</b> {p.price ? p.price.toLocaleString() : "-"}{" "}
+                  تومان
+                </p>
+              ) : (
+                <>
+                  <p className="text-sm mb-1">
+                    <b>رهن:</b> {p.deposit ? p.deposit.toLocaleString() : "-"}{" "}
+                    تومان
+                  </p>
+                  <p className="text-sm mb-2">
+                    <b>اجاره ماهیانه:</b>{" "}
+                    {p.rent ? p.rent.toLocaleString() : "-"} تومان
+                  </p>
+                </>
+              )}
             </Link>
           ))
         ) : (
