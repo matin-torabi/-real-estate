@@ -41,41 +41,48 @@ export async function GET(req: Request) {
 
 // POST: اضافه کردن آگهی جدید
 export async function POST(req: Request) {
-  const body = await req.json();
-  const {
-    title,
-    address,
-    description,
-    phone,
-    price,
-    rent,
-    deposit,
-    type,
-    images,
-    meter,
-  } = body;
-
-  await db.query(
-    `INSERT INTO properties
-      (title, address, description, phone, price, rent, deposit, type, images, meter)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
+  try {
+    const body = await req.json();
+    const {
       title,
       address,
       description,
       phone,
-      price || 0,
-      rent || 0,
-      deposit || 0,
+      price,
+      rent,
+      deposit,
       type,
-      JSON.stringify(images || []),
-      meter || 0,
-    ]
-  );
+      images,
+      meter,
+    } = body;
 
-  return NextResponse.json({ message: "آگهی با موفقیت اضافه شد" });
+    const [result] = await db.query(
+      `INSERT INTO properties
+        (title, address, description, phone, price, rent, deposit, type, images, meter)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        title,
+        address,
+        description,
+        phone,
+        price || 0,
+        rent || 0,
+        deposit || 0,
+        type,
+        JSON.stringify(images || []),
+        meter || 0,
+      ]
+    );
+
+    // در mysql2/promise، result.insertId حاوی id جدید است
+    const insertId = (result as any).insertId;
+
+    return NextResponse.json({ message: "آگهی با موفقیت اضافه شد", id: insertId });
+  } catch (err: any) {
+    console.error("DB ERROR:", err);
+    return NextResponse.json({ error: err.message || "خطا در ثبت آگهی" }, { status: 500 });
+  }
 }
-
 // PUT: ویرایش آگهی
 export async function PUT(req: Request) {
   const url = new URL(req.url);

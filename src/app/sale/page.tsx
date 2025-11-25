@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import FilterBar from "@/src/components/FilterBar";
 import Link from "next/link";
+import FilterBar from "@/src/components/FilterBar";
 
 interface Property {
   id: number;
@@ -16,7 +16,7 @@ interface Property {
   rent: number;
   deposit: number;
   type: string;
-  image: string;
+  images: string[]; // آرایه تصاویر
   meter: number;
 }
 
@@ -51,9 +51,9 @@ export default function SalePage() {
       </h1>
 
       {/* FilterBar */}
-      {/* <div className="mb-6">
+      <div className="mobile:flex justify-center laptop:hidden mb-6">
         <FilterBar defaultType="buy" />
-      </div> */}
+      </div>
 
       {/* لیست آگهی‌ها */}
       <div className="flex flex-wrap gap-6 justify-center">
@@ -64,12 +64,20 @@ export default function SalePage() {
               href={`/property/${p.id}`}
               className="backdrop-blur-lg bg-white rounded-2xl p-6 w-80 shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl block"
             >
-              {p.image && (
+              {p.images && p.images.length > 0 ? (
                 <Image
-                  src={p.image}
+                  src={p.images[0]}
                   width={300}
                   height={300}
                   alt={p.title}
+                  className="w-full h-48 object-cover rounded-xl mb-4"
+                />
+              ) : (
+                <Image
+                  src="/hero.jpg"
+                  width={300}
+                  height={300}
+                  alt="default"
                   className="w-full h-48 object-cover rounded-xl mb-4"
                 />
               )}
@@ -87,18 +95,15 @@ export default function SalePage() {
               </p>
               {p.type === "buy" ? (
                 <p className="text-base font-semibold mb-1">
-                  <b>قیمت خرید:</b> {p.price ? p.price.toLocaleString() : "-"}{" "}
-                  تومان
+                  <b>قیمت خرید:</b> {p.price ? p.price.toLocaleString() : "-"} تومان
                 </p>
               ) : (
                 <>
                   <p className="text-sm mb-1">
-                    <b>رهن:</b> {p.deposit ? p.deposit.toLocaleString() : "-"}{" "}
-                    تومان
+                    <b>رهن:</b> {p.deposit ? p.deposit.toLocaleString() : "-"} تومان
                   </p>
                   <p className="text-sm mb-2">
-                    <b>اجاره ماهیانه:</b>{" "}
-                    {p.rent ? p.rent.toLocaleString() : "-"} تومان
+                    <b>اجاره ماهیانه:</b> {p.rent ? p.rent.toLocaleString() : "-"} تومان
                   </p>
                 </>
               )}

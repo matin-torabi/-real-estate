@@ -9,22 +9,24 @@ function Navbar() {
   const pathName = usePathname();
 
   return (
-    <div className="sticky top-0 bg-white shadow z-40 w-full flex justify-center items-center h-[100px]">
-      <div className="w-[70%] flex h-full font-[Number] justify-between items-center">
-        <div className="text-2xl text-[#DC143C] flex justify-between gap-3 items-center">
+    <div className="sticky top-0 bg-white shadow z-40 w-full flex justify-center items-center h-[100px] mobile:px-5 laptop:px-0">
+      <div className="mobile:w-full laptop:w-[70%] flex h-full font-[Number] justify-between items-center">
+        <div className="mobile:text-xl desktop:text-2xl text-[#DC143C] flex justify-between gap-3 items-center">
           <Link className="flex items-center gap-2.5" href="/">
             <MdOutlineRealEstateAgent />
             املاک شاپور
           </Link>
-          <FilterBar defaultType={pathName === "/sale" ? "buy" : "rent"} />
+          <div className="mobile:hidden laptop:flex">
+            <FilterBar defaultType={pathName === "/sale" ? "buy" : "rent"} />
+          </div>
         </div>
-        <div className="flex justify-center p-2 gap-5">
+        <div className="flex justify-center p-2 mobile:gap-3 tablet:gap-5">
           <Link
             href="/sale"
             className={
               pathName === "/sale"
-                ? "bg-[#0BA6DF] text-white px-6 py-2 rounded font-semibold flex items-center gap-2 shadow-md"
-                : "bg-white text-[#0BA6DF] px-6 py-2 rounded font-semibold flex items-center gap-2 shadow-md"
+                ? "bg-[#0BA6DF] text-white mobile:px-4 mobile:text-sm tablet:text-[16px] tablet:px-6 py-2 rounded font-semibold flex items-center gap-2 shadow-md"
+                : "bg-white text-[#0BA6DF] mobile:px-4 mobile:text-sm tablet:text-[16px] tablet:px-6 py-2 rounded font-semibold flex items-center gap-2 shadow-md"
             }
           >
             خرید
@@ -34,8 +36,8 @@ function Navbar() {
             href="/rent"
             className={
               pathName === "/rent"
-                ? "bg-[#0BA6DF] text-white px-6 py-2 rounded font-semibold flex items-center gap-2 shadow-md"
-                : "bg-white text-[#0BA6DF] px-6 py-2 rounded font-semibold flex items-center gap-2 shadow-md"
+                ? "bg-[#0BA6DF] text-white mobile:px-4 mobile:text-sm tablet:text-[16px] tablet:px-6 py-2 rounded font-semibold flex items-center gap-2 shadow-md"
+                : "bg-white text-[#0BA6DF] mobile:px-4 mobile:text-sm tablet:text-[16px] tablet:px-6 py-2 rounded font-semibold flex items-center gap-2 shadow-md"
             }
           >
             اجاره

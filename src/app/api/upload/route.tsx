@@ -5,30 +5,26 @@ import path from "path";
 
 export async function POST(req: Request) {
   const formData = await req.formData();
-  const file: File | null = formData.get("file") as unknown as File;
+  const files = formData.getAll("files") as File[];
 
-  if (!file) {
-    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+  if (!files || files.length === 0) {
+    return NextResponse.json({ error: "No files uploaded" }, { status: 400 });
   }
 
-  // تبدیل Blob به Buffer
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  // ساخت مسیر آپلود
   const uploadDir = path.join(process.cwd(), "public/uploads");
   await fs.mkdir(uploadDir, { recursive: true });
 
-  // ساخت نام فایل
-  const ext = file.name.split(".").pop();
-  const filename = `${randomUUID()}.${ext}`;
+  const urls: string[] = [];
 
-  // ذخیره فایل
-  const filepath = path.join(uploadDir, filename);
-  await fs.writeFile(filepath, buffer);
+  for (const file of files) {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const ext = file.name.split(".").pop();
+    const filename = `${randomUUID()}.${ext}`;
+    const filepath = path.join(uploadDir, filename);
+    await fs.writeFile(filepath, buffer);
+    urls.push(`/uploads/${filename}`);
+  }
 
-  // آدرس قابل دسترس در فرانت
-  const url = `/uploads/${filename}`;
-
-  return NextResponse.json({ url });
+  return NextResponse.json({ urls });
 }
