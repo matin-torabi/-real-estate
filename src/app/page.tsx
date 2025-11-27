@@ -1,4 +1,3 @@
-import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import Slider from "../components/Slider";
 
@@ -20,7 +19,6 @@ export default async function Page() {
           <Slider ads={ads} />
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
