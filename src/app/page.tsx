@@ -1,12 +1,31 @@
+import About from "../components/About";
 import Hero from "../components/Hero";
 import Slider from "../components/Slider";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 async function getLatestAds() {
-  const res = await fetch("http://localhost:3000/api/ads", {
-    cache: "no-store", 
-  });
-  return res.json();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("*")
+    .order("id", { ascending: false })
+    .limit(10); // مثلا ۱۰ آگهی آخر
+
+  if (error) {
+    console.error("Supabase fetch error:", error.message);
+    return [];
+  }
+
+  return data.map((ad) => ({
+    ...ad,
+    images: Array.isArray(ad.images) ? ad.images : [], // اطمینان از آرایه بودن تصاویر
+  }));
 }
+
 export default async function Page() {
   const ads = await getLatestAds();
 
@@ -19,6 +38,7 @@ export default async function Page() {
           <Slider ads={ads} />
         </div>
       </div>
+      <About />
     </div>
   );
 }

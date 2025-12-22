@@ -1,3 +1,7 @@
+import { FaInstagram, FaTelegram, FaWhatsapp } from "react-icons/fa6";
+import Location from "./Location";
+import Link from "next/link";
+
 function Footer() {
   return (
     <>
@@ -23,12 +27,18 @@ function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xl font-bold mb-3">ساعات کاری</h3>
-            <p className="text-sm leading-7">
-              شنبه تا پنجشنبه: 9 صبح تا 6 عصر
-              <br />
-              جمعه‌ها: تعطیل
-            </p>
+            <h3 className="text-xl font-bold mb-3">شبکه های مجازی</h3>
+            <div className="flex items-center gap-5 mt-5">
+              <Link href="">
+                <FaTelegram className="text-3xl text-gray-600 hover:text-blue-400 duration-300" />
+              </Link>
+              <Link href="">
+                <FaWhatsapp className="text-3xl text-gray-600 hover:text-green-400 duration-300" />
+              </Link>
+              <Link href="">
+                <FaInstagram className="text-3xl text-gray-600 hover:text-red-500 duration-300" />
+              </Link>
+            </div>
           </div>
         </div>
       </footer>

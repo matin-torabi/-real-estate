@@ -2,13 +2,19 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function Hero() {
   const [counts, setCounts] = useState(0);
 
   const getCount = async () => {
-    const res = await fetch("/api/properties");
-    const data = await res.json();
+    const { data, error } = await supabase.from("properties").select("id");
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
     setCounts(data.length);
   };
 
@@ -30,9 +36,7 @@ export default function Hero() {
           املاک برتر را در بهترین مناطق کشف کنید
         </p>
         <div className="hover:bg-[#2b2b2b] select-none text-xs hover:text-white duration-300 bg-white px-5 py-2 font-bold rounded-3xl text-[#2b2b2b] flex justify-center items-center mt-3">
-          <span>
-             بیش از {counts} ملک موجود
-          </span>
+          <span>بیش از {counts} ملک موجود</span>
         </div>
       </div>
     </div>
