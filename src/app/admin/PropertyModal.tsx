@@ -1,7 +1,7 @@
 "use client";
 
 import { supabase } from "@/src/lib/supabase";
-import { PropertyModalProps } from "@/src/types/property";
+import { PropertyFormState, PropertyModalProps } from "@/src/types/property";
 import { useState, useEffect } from "react";
 
 const PropertyModal = ({
@@ -11,39 +11,36 @@ const PropertyModal = ({
   initialData,
   isEditing = false,
 }: PropertyModalProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<PropertyFormState>({
     type: "buy",
     title: "",
-    address: null,
-    description: null,
-    phone: null,
+    address: "",
+    description: "",
+    phone: "",
     price: null,
     rent: null,
     deposit: null,
-    images: [],
     meter: null,
+    images: [],
   });
 
   const [loading, setLoading] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-
-  
-  // اگر در حالت ویرایش هستیم، فرم را با داده اولیه پر کنیم
   useEffect(() => {
     if (isEditing && initialData) {
       setFormData({
-        type: initialData.type || "buy",
-        title: initialData.title || "",
-        address: initialData.address || null,
-        description: initialData.description || null,
-        phone: initialData.phone || null,
-        price: initialData.price || null,
-        rent: initialData.rent || null,
-        deposit: initialData.deposit || null,
-        images: initialData.images || [],
-        meter: initialData.meter || null,
+        type: initialData.type ?? "buy",
+        title: initialData.title ?? "",
+        address: initialData.address ?? "",
+        description: initialData.description ?? "",
+        phone: initialData.phone ?? "",
+        price: initialData.price ?? null,
+        rent: initialData.rent ?? null,
+        deposit: initialData.deposit ?? null,
+        images: initialData.images ?? [],
+        meter: initialData.meter ?? null,
       });
     }
   }, [isEditing, initialData]);
@@ -54,9 +51,9 @@ const PropertyModal = ({
       setFormData({
         type: "buy",
         title: "",
-        address: null,
-        description: null,
-        phone: null,
+        address: "",
+        description: "",
+        phone: "",
         price: null,
         rent: null,
         deposit: null,
@@ -66,6 +63,48 @@ const PropertyModal = ({
       setUploadProgress(0);
     }
   }, [isOpen]);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
+    if (name === "type") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        price: null,
+        rent: null,
+        deposit: null,
+      }));
+      return;
+    }
+
+    const numericFields = ["price", "rent", "deposit", "meter"];
+    if (numericFields.includes(name)) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value === "" ? null : parseFloat(value),
+      }));
+      return;
+    }
+
+    const optionalFields = ["address", "description", "phone"];
+    if (optionalFields.includes(name)) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value === "" ? "" : value,
+      }));
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const showPriceFields = () => {
     switch (formData.type) {
@@ -87,7 +126,6 @@ const PropertyModal = ({
             />
           </div>
         );
-
       case "rent":
         return (
           <>
@@ -123,57 +161,11 @@ const PropertyModal = ({
             </div>
           </>
         );
-
       default:
         return null;
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-
-    if (name === "type") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-        price: null,
-        rent: null,
-        deposit: null,
-      }));
-      return;
-    }
-
-    // Handle numeric fields
-    const numericFields = ["price", "rent", "deposit", "meter"];
-    if (numericFields.includes(name)) {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value === "" ? null : parseFloat(value),
-      }));
-      return;
-    }
-
-    // Handle empty strings as null for optional fields
-    const optionalFields = ["address", "description", "phone"];
-    if (optionalFields.includes(name)) {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value === "" ? null : value,
-      }));
-      return;
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // تابع آپلود تصاویر
   const uploadImagesToStorage = async (files: FileList): Promise<string[]> => {
     const uploadedUrls: string[] = [];
 
@@ -194,11 +186,10 @@ const PropertyModal = ({
         continue;
       }
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("property-images").getPublicUrl(filePath);
-
-      uploadedUrls.push(publicUrl);
+      const { data: urlData } = supabase.storage
+        .from("property-images")
+        .getPublicUrl(filePath);
+      uploadedUrls.push(urlData.publicUrl);
       setUploadProgress(Math.round(((i + 1) / files.length) * 100));
     }
 
@@ -251,7 +242,6 @@ const PropertyModal = ({
   };
 
   const validateForm = (): boolean => {
-    // اعتبارسنجی فیلدهای اجباری عمومی
     if (!formData.title.trim()) {
       alert("لطفا عنوان را وارد کنید");
       return false;
@@ -262,7 +252,6 @@ const PropertyModal = ({
       return false;
     }
 
-    // اعتبارسنجی قیمت بر اساس نوع معامله
     if (formData.type === "buy") {
       if (!formData.price || formData.price <= 0) {
         alert("لطفا قیمت فروش را وارد کنید");
@@ -285,15 +274,11 @@ const PropertyModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // اعتبارسنجی فرم
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
 
     try {
-      // ایجاد slug
       const slug =
         formData.title
           .toLowerCase()
@@ -304,7 +289,6 @@ const PropertyModal = ({
         "-" +
         Date.now();
 
-      // ساختار داده بر اساس نوع معامله
       let propertyData: Record<string, any> = {
         type: formData.type,
         title: formData.title,
@@ -316,18 +300,16 @@ const PropertyModal = ({
         images: formData.images,
       };
 
-      // اضافه کردن فیلدهای قیمت بر اساس نوع
       if (formData.type === "buy") {
         propertyData.price = formData.price;
-        propertyData.rent = null; // برای خرید، اجاره null باشد
-        propertyData.deposit = null; // برای خرید، ودیعه null باشد
+        propertyData.rent = null;
+        propertyData.deposit = null;
       } else if (formData.type === "rent") {
         propertyData.rent = formData.rent;
         propertyData.deposit = formData.deposit;
-        propertyData.price = null; // برای اجاره، قیمت null باشد
+        propertyData.price = null;
       }
 
-      // اضافه کردن created_at فقط برای رکوردهای جدید
       if (!isEditing) {
         propertyData.created_at = new Date().toISOString();
       }
@@ -335,21 +317,16 @@ const PropertyModal = ({
       console.log("📤 ارسال داده به Supabase:", propertyData);
 
       if (isEditing && initialData?.id) {
-        // ویرایش رکورد موجود
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("properties")
           .update(propertyData)
-          .eq("id", initialData.id)
-          .select();
+          .eq("id", initialData.id);
 
         if (error) throw error;
       } else {
-        // ایجاد رکورد جدید
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("properties")
-          .insert([propertyData])
-          .select();
-
+          .insert([propertyData]);
         if (error) throw error;
       }
 
@@ -360,25 +337,12 @@ const PropertyModal = ({
       onClose();
     } catch (error: any) {
       console.error("❌ خطا در ذخیره:", error);
-
-      let errorMessage = "خطا در ذخیره اطلاعات در پایگاه داده";
-
-      // نمایش خطای دقیق‌تر
-      if (error.message) {
-        errorMessage += `: ${error.message}`;
-      }
-
-      // اگر خطا مربوط به ستون missing است
-      if (error.message?.includes("column")) {
-        errorMessage +=
-          "\n\nستونی در دیتابیس وجود ندارد. لطفاً ساختار جدول را بررسی کنید.";
-      }
-
-      alert(errorMessage);
+      alert("خطا در ذخیره اطلاعات: " + (error.message ?? error));
     } finally {
       setLoading(false);
     }
   };
+
   if (!isOpen) return null;
 
   return (
