@@ -117,10 +117,8 @@ const PropertyModal = ({
             <input
               type="number"
               name="price"
-              value={formData.price || ""}
+              value={formData.price ?? ""}
               onChange={handleChange}
-              min="0"
-              required
               disabled={loading}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             />
@@ -136,10 +134,8 @@ const PropertyModal = ({
               <input
                 type="number"
                 name="rent"
-                value={formData.rent || ""}
+                value={formData.rent ?? ""}
                 onChange={handleChange}
-                min="0"
-                required
                 disabled={loading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               />
@@ -151,10 +147,8 @@ const PropertyModal = ({
               <input
                 type="number"
                 name="deposit"
-                value={formData.deposit || ""}
+                value={formData.deposit ?? ""}
                 onChange={handleChange}
-                min="0"
-                required
                 disabled={loading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               />

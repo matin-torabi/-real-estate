@@ -2,6 +2,7 @@ import About from "../components/About";
 import Hero from "../components/Hero";
 import Slider from "../components/Slider";
 import { createClient } from "@supabase/supabase-js";
+export const dynamic = "force-dynamic";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
